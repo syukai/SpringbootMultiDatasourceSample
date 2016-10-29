@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
+import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.web.servlet.handler.MappedInterceptor;
 
 @Component
 @Configuration
@@ -22,40 +24,31 @@ public class DatasourceConfig {
 	@Autowired
 	DatasourceProperties02 datasourceP02;
     
-//	@Bean
-	public DataSource datasource1(){
-		DataSource ds = new org.apache.tomcat.jdbc.pool.DataSource();
-		ds.setDriverClassName(this.datasourceBase.getDriverClassName());
-		ds.setUrl(this.datasourceP01.getUrl());
-		ds.setUsername(this.datasourceP01.getUsername());
-		ds.setPassword(this.datasourceP01.getPassword());
-		return ds;
-	}
-
-//	@Bean
-	public DataSource datasource2(){
-		DataSource ds = new org.apache.tomcat.jdbc.pool.DataSource();
-		ds.setDriverClassName(this.datasourceBase.getDriverClassName());
-		ds.setUrl(this.datasourceP02.getUrl());
-		ds.setUsername(this.datasourceP02.getUsername());
-		ds.setPassword(this.datasourceP02.getPassword());
-		return ds;
-	}
 
     @Bean
-//    @Primary
+    @Primary
     public DynamicRoutingDataSourceResolver dataSource() {
         DynamicRoutingDataSourceResolver resolver = new DynamicRoutingDataSourceResolver();
 
         Map<Object, Object> dataSources = new HashMap<Object,Object>();
-        dataSources.put("datasource1", datasource1());
-        dataSources.put("datasource2", datasource2());
+        dataSources.put("datasource1", datasourceP01.createDataSourceBean());
+        dataSources.put("datasource2", datasourceP02.createDataSourceBean());
 
         resolver.setTargetDataSources(dataSources);
         
         // default datasource
-        resolver.setDefaultTargetDataSource(datasource1());
+        resolver.setDefaultTargetDataSource(datasourceP01.createDataSourceBean());
 
         return resolver;
+    }
+    
+    @Bean
+    public HandlerInterceptor datasourceInterceptor(){
+    	return new com.example.interceptor.DatasourceInterceptor();
+    }
+    
+    @Bean
+    public MappedInterceptor interceptorMapping(){
+    	return new MappedInterceptor(new String[]{"/**"}, datasourceInterceptor());
     }
 }
