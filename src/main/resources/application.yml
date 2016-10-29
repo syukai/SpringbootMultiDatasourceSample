@@ -1,0 +1,19 @@
+#spring:
+#  datasource:
+#    sqlScriptEncoding: UTF-8
+#spring.datasource.tomcat:
+#    driverClassName: com.mysql.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306
+#    username: user01
+#    password: pass
+#    #pooling setting
+#    maxActive: 15
+#    maxIdle: 10
+#    minIdle: 5
+#    initialSize: 2
+#    #connection validation
+#    validation-query: SELECT 1 FROM DUAL
+#    test-on-borrow: true
+#    test-while-idle: true
+#    time-between-eviction-runs-millis: 600000
+#    min-evictable-idle-time-millis: 600000
